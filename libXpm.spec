@@ -4,7 +4,7 @@
 #
 Name     : libXpm
 Version  : 3.5.11
-Release  : 3
+Release  : 4
 URL      : http://xorg.freedesktop.org/releases/individual/lib/libXpm-3.5.11.tar.gz
 Source0  : http://xorg.freedesktop.org/releases/individual/lib/libXpm-3.5.11.tar.gz
 Summary  : X Pixmap Library
