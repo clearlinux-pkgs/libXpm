@@ -6,7 +6,7 @@
 #
 Name     : libXpm
 Version  : 3.5.12
-Release  : 7
+Release  : 8
 URL      : http://xorg.freedesktop.org/releases/individual/lib/libXpm-3.5.12.tar.bz2
 Source0  : http://xorg.freedesktop.org/releases/individual/lib/libXpm-3.5.12.tar.bz2
 Source99 : http://xorg.freedesktop.org/releases/individual/lib/libXpm-3.5.12.tar.bz2.sig
@@ -67,8 +67,15 @@ lib components for the libXpm package.
 %setup -q -n libXpm-3.5.12
 
 %build
+export http_proxy=http://127.0.0.1:9/
+export https_proxy=http://127.0.0.1:9/
+export no_proxy=localhost,127.0.0.1,0.0.0.0
 export LANG=C
-export SOURCE_DATE_EPOCH=1487983032
+export SOURCE_DATE_EPOCH=1500994170
+export CFLAGS="$CFLAGS -Os -fdata-sections -ffunction-sections -fno-semantic-interposition "
+export FCFLAGS="$CFLAGS -Os -fdata-sections -ffunction-sections -fno-semantic-interposition "
+export FFLAGS="$CFLAGS -Os -fdata-sections -ffunction-sections -fno-semantic-interposition "
+export CXXFLAGS="$CXXFLAGS -Os -fdata-sections -ffunction-sections -fno-semantic-interposition "
 %configure --disable-static
 make V=1  %{?_smp_mflags}
 
@@ -76,11 +83,11 @@ make V=1  %{?_smp_mflags}
 export LANG=C
 export http_proxy=http://127.0.0.1:9/
 export https_proxy=http://127.0.0.1:9/
-export no_proxy=localhost
+export no_proxy=localhost,127.0.0.1,0.0.0.0
 make VERBOSE=1 V=1 %{?_smp_mflags} check
 
 %install
-export SOURCE_DATE_EPOCH=1487983032
+export SOURCE_DATE_EPOCH=1500994170
 rm -rf %{buildroot}
 %make_install
 
