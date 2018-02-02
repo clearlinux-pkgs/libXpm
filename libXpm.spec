@@ -6,7 +6,7 @@
 #
 Name     : libXpm
 Version  : 3.5.12
-Release  : 8
+Release  : 9
 URL      : http://xorg.freedesktop.org/releases/individual/lib/libXpm-3.5.12.tar.bz2
 Source0  : http://xorg.freedesktop.org/releases/individual/lib/libXpm-3.5.12.tar.bz2
 Source99 : http://xorg.freedesktop.org/releases/individual/lib/libXpm-3.5.12.tar.bz2.sig
