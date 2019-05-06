@@ -6,16 +6,17 @@
 #
 Name     : libXpm
 Version  : 3.5.12
-Release  : 10
+Release  : 11
 URL      : http://xorg.freedesktop.org/releases/individual/lib/libXpm-3.5.12.tar.bz2
 Source0  : http://xorg.freedesktop.org/releases/individual/lib/libXpm-3.5.12.tar.bz2
 Source99 : http://xorg.freedesktop.org/releases/individual/lib/libXpm-3.5.12.tar.bz2.sig
-Summary  : X Pixmap Library
+Summary  : X11 pixmap library
 Group    : Development/Tools
 License  : MIT
-Requires: libXpm-bin
-Requires: libXpm-lib
-Requires: libXpm-doc
+Requires: libXpm-bin = %{version}-%{release}
+Requires: libXpm-lib = %{version}-%{release}
+Requires: libXpm-license = %{version}-%{release}
+Requires: libXpm-man = %{version}-%{release}
 BuildRequires : pkgconfig(x11)
 BuildRequires : pkgconfig(xext)
 BuildRequires : pkgconfig(xextproto)
@@ -24,13 +25,17 @@ BuildRequires : pkgconfig(xproto)
 BuildRequires : pkgconfig(xt)
 
 %description
-libXpm - X Pixmap (XPM) image file format library
-All questions regarding this software should be directed at the
-Xorg mailing list:
+The XPM library for MS-Windows
+Motivated by the wxWindows library, which is a (freely available) toolkit
+for developing multi-platform, graphical applications from the same body
+of C++ code, I wanted to have XPM pixmaps for MS-windows. Instead of rewriting
+a XPM-parser I managed to port the XPM-library-code to MS-windows.
+Thanks to Anaud Le Hors this became a part of the official XPM-library.
 
 %package bin
 Summary: bin components for the libXpm package.
 Group: Binaries
+Requires: libXpm-license = %{version}-%{release}
 
 %description bin
 bin components for the libXpm package.
@@ -39,28 +44,38 @@ bin components for the libXpm package.
 %package dev
 Summary: dev components for the libXpm package.
 Group: Development
-Requires: libXpm-lib
-Requires: libXpm-bin
-Provides: libXpm-devel
+Requires: libXpm-lib = %{version}-%{release}
+Requires: libXpm-bin = %{version}-%{release}
+Provides: libXpm-devel = %{version}-%{release}
+Requires: libXpm = %{version}-%{release}
 
 %description dev
 dev components for the libXpm package.
 
 
-%package doc
-Summary: doc components for the libXpm package.
-Group: Documentation
-
-%description doc
-doc components for the libXpm package.
-
-
 %package lib
 Summary: lib components for the libXpm package.
 Group: Libraries
+Requires: libXpm-license = %{version}-%{release}
 
 %description lib
 lib components for the libXpm package.
+
+
+%package license
+Summary: license components for the libXpm package.
+Group: Default
+
+%description license
+license components for the libXpm package.
+
+
+%package man
+Summary: man components for the libXpm package.
+Group: Default
+
+%description man
+man components for the libXpm package.
 
 
 %prep
@@ -71,13 +86,16 @@ export http_proxy=http://127.0.0.1:9/
 export https_proxy=http://127.0.0.1:9/
 export no_proxy=localhost,127.0.0.1,0.0.0.0
 export LANG=C
-export SOURCE_DATE_EPOCH=1500994170
-export CFLAGS="$CFLAGS -Os -fdata-sections -ffunction-sections -fno-semantic-interposition "
-export FCFLAGS="$CFLAGS -Os -fdata-sections -ffunction-sections -fno-semantic-interposition "
-export FFLAGS="$CFLAGS -Os -fdata-sections -ffunction-sections -fno-semantic-interposition "
-export CXXFLAGS="$CXXFLAGS -Os -fdata-sections -ffunction-sections -fno-semantic-interposition "
+export SOURCE_DATE_EPOCH=1557108066
+export AR=gcc-ar
+export RANLIB=gcc-ranlib
+export NM=gcc-nm
+export CFLAGS="$CFLAGS -O3 -Os -fdata-sections -ffat-lto-objects -ffunction-sections -flto=4 -fno-semantic-interposition "
+export FCFLAGS="$CFLAGS -O3 -Os -fdata-sections -ffat-lto-objects -ffunction-sections -flto=4 -fno-semantic-interposition "
+export FFLAGS="$CFLAGS -O3 -Os -fdata-sections -ffat-lto-objects -ffunction-sections -flto=4 -fno-semantic-interposition "
+export CXXFLAGS="$CXXFLAGS -O3 -Os -fdata-sections -ffat-lto-objects -ffunction-sections -flto=4 -fno-semantic-interposition "
 %configure --disable-static
-make V=1  %{?_smp_mflags}
+make  %{?_smp_mflags}
 
 %check
 export LANG=C
@@ -87,8 +105,11 @@ export no_proxy=localhost,127.0.0.1,0.0.0.0
 make VERBOSE=1 V=1 %{?_smp_mflags} check
 
 %install
-export SOURCE_DATE_EPOCH=1500994170
+export SOURCE_DATE_EPOCH=1557108066
 rm -rf %{buildroot}
+mkdir -p %{buildroot}/usr/share/package-licenses/libXpm
+cp COPYING %{buildroot}/usr/share/package-licenses/libXpm/COPYING
+cp COPYRIGHT %{buildroot}/usr/share/package-licenses/libXpm/COPYRIGHT
 %make_install
 
 %files
@@ -105,11 +126,17 @@ rm -rf %{buildroot}
 /usr/lib64/libXpm.so
 /usr/lib64/pkgconfig/xpm.pc
 
-%files doc
-%defattr(-,root,root,-)
-%doc /usr/share/man/man1/*
-
 %files lib
 %defattr(-,root,root,-)
 /usr/lib64/libXpm.so.4
 /usr/lib64/libXpm.so.4.11.0
+
+%files license
+%defattr(0644,root,root,0755)
+/usr/share/package-licenses/libXpm/COPYING
+/usr/share/package-licenses/libXpm/COPYRIGHT
+
+%files man
+%defattr(0644,root,root,0755)
+/usr/share/man/man1/cxpm.1
+/usr/share/man/man1/sxpm.1
