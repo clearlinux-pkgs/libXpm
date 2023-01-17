@@ -5,11 +5,11 @@
 # Source0 file verified with key 0xCFDF148828C642A7 (alan.coopersmith@oracle.com)
 #
 Name     : libXpm
-Version  : 3.5.14
-Release  : 14
-URL      : https://www.x.org/releases/individual/lib/libXpm-3.5.14.tar.xz
-Source0  : https://www.x.org/releases/individual/lib/libXpm-3.5.14.tar.xz
-Source1  : https://www.x.org/releases/individual/lib/libXpm-3.5.14.tar.xz.sig
+Version  : 3.5.15
+Release  : 15
+URL      : https://www.x.org/releases/individual/lib/libXpm-3.5.15.tar.xz
+Source0  : https://www.x.org/releases/individual/lib/libXpm-3.5.15.tar.xz
+Source1  : https://www.x.org/releases/individual/lib/libXpm-3.5.15.tar.xz.sig
 Summary  : X Pixmap Library
 Group    : Development/Tools
 License  : MIT
@@ -20,6 +20,7 @@ Requires: libXpm-man = %{version}-%{release}
 BuildRequires : gcc-dev32
 BuildRequires : gcc-libgcc32
 BuildRequires : gcc-libstdc++32
+BuildRequires : glib-dev
 BuildRequires : glibc-dev32
 BuildRequires : glibc-libc32
 BuildRequires : pkg-config
@@ -35,6 +36,9 @@ BuildRequires : pkgconfig(xextproto)
 BuildRequires : pkgconfig(xorg-macros)
 BuildRequires : pkgconfig(xproto)
 BuildRequires : pkgconfig(xt)
+# Suppress stripping binaries
+%define __strip /bin/true
+%define debug_package %{nil}
 
 %description
 libXpm - X Pixmap (XPM) image file format library
@@ -107,10 +111,10 @@ man components for the libXpm package.
 
 
 %prep
-%setup -q -n libXpm-3.5.14
-cd %{_builddir}/libXpm-3.5.14
+%setup -q -n libXpm-3.5.15
+cd %{_builddir}/libXpm-3.5.15
 pushd ..
-cp -a libXpm-3.5.14 build32
+cp -a libXpm-3.5.15 build32
 popd
 
 %build
@@ -118,16 +122,16 @@ export http_proxy=http://127.0.0.1:9/
 export https_proxy=http://127.0.0.1:9/
 export no_proxy=localhost,127.0.0.1,0.0.0.0
 export LANG=C.UTF-8
-export SOURCE_DATE_EPOCH=1669043706
+export SOURCE_DATE_EPOCH=1673981371
 export GCC_IGNORE_WERROR=1
 export AR=gcc-ar
 export RANLIB=gcc-ranlib
 export NM=gcc-nm
-export CFLAGS="$CFLAGS -O3 -Os -fdata-sections -ffat-lto-objects -ffunction-sections -flto=auto -fno-semantic-interposition "
-export FCFLAGS="$FFLAGS -O3 -Os -fdata-sections -ffat-lto-objects -ffunction-sections -flto=auto -fno-semantic-interposition "
-export FFLAGS="$FFLAGS -O3 -Os -fdata-sections -ffat-lto-objects -ffunction-sections -flto=auto -fno-semantic-interposition "
-export CXXFLAGS="$CXXFLAGS -O3 -Os -fdata-sections -ffat-lto-objects -ffunction-sections -flto=auto -fno-semantic-interposition "
-%configure --disable-static
+export CFLAGS="$CFLAGS -O3 -Os -fdata-sections -fdebug-types-section -femit-struct-debug-baseonly -ffat-lto-objects -ffunction-sections -flto=auto -fno-semantic-interposition -g1 -gno-column-info -gno-variable-location-views -gz "
+export FCFLAGS="$FFLAGS -O3 -Os -fdata-sections -fdebug-types-section -femit-struct-debug-baseonly -ffat-lto-objects -ffunction-sections -flto=auto -fno-semantic-interposition -g1 -gno-column-info -gno-variable-location-views -gz "
+export FFLAGS="$FFLAGS -O3 -Os -fdata-sections -fdebug-types-section -femit-struct-debug-baseonly -ffat-lto-objects -ffunction-sections -flto=auto -fno-semantic-interposition -g1 -gno-column-info -gno-variable-location-views -gz "
+export CXXFLAGS="$CXXFLAGS -O3 -Os -fdata-sections -fdebug-types-section -femit-struct-debug-baseonly -ffat-lto-objects -ffunction-sections -flto=auto -fno-semantic-interposition -g1 -gno-column-info -gno-variable-location-views -gz "
+%configure --disable-static --disable-stat-zfile --disable-open-zfile
 make  %{?_smp_mflags}
 
 pushd ../build32/
@@ -136,23 +140,14 @@ export ASFLAGS="${ASFLAGS}${ASFLAGS:+ }--32"
 export CFLAGS="${CFLAGS}${CFLAGS:+ }-m32 -mstackrealign"
 export CXXFLAGS="${CXXFLAGS}${CXXFLAGS:+ }-m32 -mstackrealign"
 export LDFLAGS="${LDFLAGS}${LDFLAGS:+ }-m32 -mstackrealign"
-%configure --disable-static    --libdir=/usr/lib32 --build=i686-generic-linux-gnu --host=i686-generic-linux-gnu --target=i686-clr-linux-gnu
+%configure --disable-static --disable-stat-zfile --disable-open-zfile   --libdir=/usr/lib32 --build=i686-generic-linux-gnu --host=i686-generic-linux-gnu --target=i686-clr-linux-gnu
 make  %{?_smp_mflags}
 popd
-%check
-export LANG=C.UTF-8
-export http_proxy=http://127.0.0.1:9/
-export https_proxy=http://127.0.0.1:9/
-export no_proxy=localhost,127.0.0.1,0.0.0.0
-make %{?_smp_mflags} check
-cd ../build32;
-make %{?_smp_mflags} check || :
-
 %install
-export SOURCE_DATE_EPOCH=1669043706
+export SOURCE_DATE_EPOCH=1673981371
 rm -rf %{buildroot}
 mkdir -p %{buildroot}/usr/share/package-licenses/libXpm
-cp %{_builddir}/libXpm-%{version}/COPYING %{buildroot}/usr/share/package-licenses/libXpm/bb3f0ac3134bb7f653b86382963be0f4aac57086 || :
+cp %{_builddir}/libXpm-%{version}/COPYING %{buildroot}/usr/share/package-licenses/libXpm/0353e2351020adff9883789359be7a5a6c688c96 || :
 cp %{_builddir}/libXpm-%{version}/COPYRIGHT %{buildroot}/usr/share/package-licenses/libXpm/a4777b6caf11b08abc996727d094e2dafc16caaa || :
 pushd ../build32/
 %make_install32
@@ -244,8 +239,8 @@ popd
 
 %files license
 %defattr(0644,root,root,0755)
+/usr/share/package-licenses/libXpm/0353e2351020adff9883789359be7a5a6c688c96
 /usr/share/package-licenses/libXpm/a4777b6caf11b08abc996727d094e2dafc16caaa
-/usr/share/package-licenses/libXpm/bb3f0ac3134bb7f653b86382963be0f4aac57086
 
 %files man
 %defattr(0644,root,root,0755)

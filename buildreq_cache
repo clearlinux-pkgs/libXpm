@@ -1,4 +1,5 @@
-3.5.14
+3.5.15
+glib-dev
 pkg-config
 pkgconfig(32xorg-macros)
 pkgconfig(xorg-macros)
