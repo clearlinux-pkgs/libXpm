@@ -7,7 +7,7 @@
 #
 Name     : libXpm
 Version  : 3.5.16
-Release  : 16
+Release  : 17
 URL      : https://www.x.org/releases/individual/lib/libXpm-3.5.16.tar.xz
 Source0  : https://www.x.org/releases/individual/lib/libXpm-3.5.16.tar.xz
 Source1  : https://www.x.org/releases/individual/lib/libXpm-3.5.16.tar.xz.sig
@@ -118,21 +118,24 @@ cd %{_builddir}/libXpm-3.5.16
 pushd ..
 cp -a libXpm-3.5.16 build32
 popd
+pushd ..
+cp -a libXpm-3.5.16 buildavx2
+popd
 
 %build
 export http_proxy=http://127.0.0.1:9/
 export https_proxy=http://127.0.0.1:9/
 export no_proxy=localhost,127.0.0.1,0.0.0.0
 export LANG=C.UTF-8
-export SOURCE_DATE_EPOCH=1681772153
+export SOURCE_DATE_EPOCH=1684945096
 export GCC_IGNORE_WERROR=1
 export AR=gcc-ar
 export RANLIB=gcc-ranlib
 export NM=gcc-nm
-export CFLAGS="$CFLAGS -O3 -Os -fdata-sections -fdebug-types-section -femit-struct-debug-baseonly -ffat-lto-objects -ffunction-sections -flto=auto -fno-semantic-interposition -g1 -gno-column-info -gno-variable-location-views -gz "
-export FCFLAGS="$FFLAGS -O3 -Os -fdata-sections -fdebug-types-section -femit-struct-debug-baseonly -ffat-lto-objects -ffunction-sections -flto=auto -fno-semantic-interposition -g1 -gno-column-info -gno-variable-location-views -gz "
-export FFLAGS="$FFLAGS -O3 -Os -fdata-sections -fdebug-types-section -femit-struct-debug-baseonly -ffat-lto-objects -ffunction-sections -flto=auto -fno-semantic-interposition -g1 -gno-column-info -gno-variable-location-views -gz "
-export CXXFLAGS="$CXXFLAGS -O3 -Os -fdata-sections -fdebug-types-section -femit-struct-debug-baseonly -ffat-lto-objects -ffunction-sections -flto=auto -fno-semantic-interposition -g1 -gno-column-info -gno-variable-location-views -gz "
+export CFLAGS="$CFLAGS -O3 -Os -fdata-sections -fdebug-types-section -femit-struct-debug-baseonly -ffat-lto-objects -ffunction-sections -flto=auto -fno-semantic-interposition -g1 -gno-column-info -gno-variable-location-views -gz=zstd "
+export FCFLAGS="$FFLAGS -O3 -Os -fdata-sections -fdebug-types-section -femit-struct-debug-baseonly -ffat-lto-objects -ffunction-sections -flto=auto -fno-semantic-interposition -g1 -gno-column-info -gno-variable-location-views -gz=zstd "
+export FFLAGS="$FFLAGS -O3 -Os -fdata-sections -fdebug-types-section -femit-struct-debug-baseonly -ffat-lto-objects -ffunction-sections -flto=auto -fno-semantic-interposition -g1 -gno-column-info -gno-variable-location-views -gz=zstd "
+export CXXFLAGS="$CXXFLAGS -O3 -Os -fdata-sections -fdebug-types-section -femit-struct-debug-baseonly -ffat-lto-objects -ffunction-sections -flto=auto -fno-semantic-interposition -g1 -gno-column-info -gno-variable-location-views -gz=zstd "
 %configure --disable-static --disable-stat-zfile --disable-open-zfile
 make  %{?_smp_mflags}
 
@@ -145,8 +148,18 @@ export LDFLAGS="${LDFLAGS}${LDFLAGS:+ }-m32 -mstackrealign"
 %configure --disable-static --disable-stat-zfile --disable-open-zfile   --libdir=/usr/lib32 --build=i686-generic-linux-gnu --host=i686-generic-linux-gnu --target=i686-clr-linux-gnu
 make  %{?_smp_mflags}
 popd
+unset PKG_CONFIG_PATH
+pushd ../buildavx2/
+export CFLAGS="$CFLAGS -m64 -march=x86-64-v3 -Wl,-z,x86-64-v3"
+export CXXFLAGS="$CXXFLAGS -m64 -march=x86-64-v3 -Wl,-z,x86-64-v3"
+export FFLAGS="$FFLAGS -m64 -march=x86-64-v3 -Wl,-z,x86-64-v3"
+export FCFLAGS="$FCFLAGS -m64 -march=x86-64-v3"
+export LDFLAGS="$LDFLAGS -m64 -march=x86-64-v3"
+%configure --disable-static --disable-stat-zfile --disable-open-zfile
+make  %{?_smp_mflags}
+popd
 %install
-export SOURCE_DATE_EPOCH=1681772153
+export SOURCE_DATE_EPOCH=1684945096
 rm -rf %{buildroot}
 mkdir -p %{buildroot}/usr/share/package-licenses/libXpm
 cp %{_builddir}/libXpm-%{version}/COPYING %{buildroot}/usr/share/package-licenses/libXpm/0353e2351020adff9883789359be7a5a6c688c96 || :
@@ -166,18 +179,25 @@ for i in *.pc ; do ln -s $i 32$i ; done
 popd
 fi
 popd
+pushd ../buildavx2/
+%make_install_v3
+popd
 %make_install
+/usr/bin/elf-move.py avx2 %{buildroot}-v3 %{buildroot} %{buildroot}/usr/share/clear/filemap/filemap-%{name}
 
 %files
 %defattr(-,root,root,-)
 
 %files bin
 %defattr(-,root,root,-)
+/V3/usr/bin/cxpm
+/V3/usr/bin/sxpm
 /usr/bin/cxpm
 /usr/bin/sxpm
 
 %files dev
 %defattr(-,root,root,-)
+/V3/usr/lib64/libXpm.so
 /usr/include/X11/xpm.h
 /usr/lib64/libXpm.so
 /usr/lib64/pkgconfig/xpm.pc
@@ -231,6 +251,8 @@ popd
 
 %files lib
 %defattr(-,root,root,-)
+/V3/usr/lib64/libXpm.so.4
+/V3/usr/lib64/libXpm.so.4.11.0
 /usr/lib64/libXpm.so.4
 /usr/lib64/libXpm.so.4.11.0
 
