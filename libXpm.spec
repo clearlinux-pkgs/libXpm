@@ -7,7 +7,7 @@
 #
 Name     : libXpm
 Version  : 3.5.16
-Release  : 17
+Release  : 18
 URL      : https://www.x.org/releases/individual/lib/libXpm-3.5.16.tar.xz
 Source0  : https://www.x.org/releases/individual/lib/libXpm-3.5.16.tar.xz
 Source1  : https://www.x.org/releases/individual/lib/libXpm-3.5.16.tar.xz.sig
@@ -127,7 +127,7 @@ export http_proxy=http://127.0.0.1:9/
 export https_proxy=http://127.0.0.1:9/
 export no_proxy=localhost,127.0.0.1,0.0.0.0
 export LANG=C.UTF-8
-export SOURCE_DATE_EPOCH=1684945096
+export SOURCE_DATE_EPOCH=1685632368
 export GCC_IGNORE_WERROR=1
 export AR=gcc-ar
 export RANLIB=gcc-ranlib
@@ -159,7 +159,7 @@ export LDFLAGS="$LDFLAGS -m64 -march=x86-64-v3"
 make  %{?_smp_mflags}
 popd
 %install
-export SOURCE_DATE_EPOCH=1684945096
+export SOURCE_DATE_EPOCH=1685632368
 rm -rf %{buildroot}
 mkdir -p %{buildroot}/usr/share/package-licenses/libXpm
 cp %{_builddir}/libXpm-%{version}/COPYING %{buildroot}/usr/share/package-licenses/libXpm/0353e2351020adff9883789359be7a5a6c688c96 || :
@@ -197,7 +197,6 @@ popd
 
 %files dev
 %defattr(-,root,root,-)
-/V3/usr/lib64/libXpm.so
 /usr/include/X11/xpm.h
 /usr/lib64/libXpm.so
 /usr/lib64/pkgconfig/xpm.pc
@@ -251,7 +250,6 @@ popd
 
 %files lib
 %defattr(-,root,root,-)
-/V3/usr/lib64/libXpm.so.4
 /V3/usr/lib64/libXpm.so.4.11.0
 /usr/lib64/libXpm.so.4
 /usr/lib64/libXpm.so.4.11.0
